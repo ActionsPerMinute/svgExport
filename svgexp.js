@@ -5,7 +5,7 @@
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         
-       var svgs = getAllSVGElements ();
+        var svgs = getAllSVGElements ();
         //console.log ("svgs", svgs);
         var svgDocs = svgs.map (function(svg) { return makeSVGDoc (svg); });
         //console.log ("docs", docs);
@@ -20,7 +20,7 @@ function getAllSVGElements () {
     var allIFrames = [].slice.apply (document.getElementsByTagName('iframe'));
     var docs = [document];
     allIFrames.forEach (function (iframe) {
-        docs.push (iframe.contentDocument || iframe.contentWindow.document);
+        try { docs.push (iframe.contentDocument || iframe.contentWindow.document); } catch(err) {}
     });
 
     var allSvgs = [];
