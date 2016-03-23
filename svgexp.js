@@ -161,14 +161,16 @@ function usedStyles (elem, subtree) {
     return needed;
 }
 
-
 function saveSVGDocs (svgDocs) {
-    var xmls = new XMLSerializer();
     svgDocs.forEach (function (doc, i) {
-        var xmlStr = xmls.serializeToString(doc);
-        // serializing adds an xmlns attribute to the style element ('cos it thinks we want xhtml), which knackers it for inkscape, here we chop it out
-        xmlStr = xmlStr.split("xmlns=\"http://www.w3.org/1999/xhtml\"").join("");
-        var blob = new Blob([xmlStr], {type: "image/svg+xml"});
-        saveAs(blob, "saved"+i+".svg");
+        saveSVGDoc(doc, "saved"+i+".svg");
     });
+}
+
+function saveSVGDoc (doc, title) {
+    var xmls = new XMLSerializer();
+    var xmlStr = xmls.serializeToString(doc);
+    xmlStr = xmlStr.split("xmlns=\"http://www.w3.org/1999/xhtml\"").join("");
+    var blob = new Blob([xmlStr], {type: "image/svg+xml"});
+    saveAs(blob, title);
 }
