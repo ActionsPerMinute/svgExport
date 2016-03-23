@@ -9,7 +9,7 @@ chrome.runtime.onMessage.addListener(
         //console.log ("svgs", svgs);
         var svgDocs = svgs.map (function(svg) { return makeSVGDoc (svg); });
         //console.log ("docs", docs);
-        saveSVGDocs (svgDocs);
+        //saveSVGDocs (svgDocs);
 
         sendResponse({status: "finished"});
     }
@@ -97,6 +97,28 @@ function makeSVGDoc (svgElem) {
     styleElem.appendChild (styleText);
     cloneSVG.insertBefore (styleElem, cloneSVG.firstChild);
 
+    var imgs = cloneSVG.getElementsByTagName("image");
+    var x = 0;
+    var ln = imgs.length;
+    for(var i=0; i < imgs.length; i++)   
+    {
+        var img = imgs[i];
+        var url = img.getAttribute("href");
+        getDataUri(url, img, function(img, data) {
+            img.setAttribute("href",data);
+            x++;
+        });
+    }
+
+    var timeout = setInterval(function()
+    { 
+        if(x>=ln) 
+        { 
+            clearInterval(timeout); 
+            saveSVGDoc(cloneSVG, 'img.svg'); 
+        } 
+    }, 1000);
+
     return cloneSVG;
 }
 
@@ -173,4 +195,21 @@ function saveSVGDoc (doc, title) {
     xmlStr = xmlStr.split("xmlns=\"http://www.w3.org/1999/xhtml\"").join("");
     var blob = new Blob([xmlStr], {type: "image/svg+xml"});
     saveAs(blob, title);
+}
+
+//from https://davidwalsh.name/convert-image-data-uri-javascript
+function getDataUri2(url, img, callback) {
+    var image = new Image();
+
+    image.onload = function () {
+        var canvas = document.createElement('canvas');
+        canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
+        canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
+
+        canvas.getContext('2d').drawImage(this, 0, 0);
+
+        callback(img, canvas.toDataURL('image/png'));
+    };
+
+    image.src = url;
 }
