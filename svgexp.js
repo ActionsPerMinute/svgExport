@@ -198,7 +198,7 @@ function saveSVGDoc (doc, title) {
 }
 
 //from https://davidwalsh.name/convert-image-data-uri-javascript
-function getDataUri2(url, img, callback) {
+function getDataUri(url, img, callback) {
     var image = new Image();
 
     image.onload = function () {
